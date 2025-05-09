@@ -2,10 +2,13 @@
 
 namespace App\Controllers;
 
+use App\Controllers\BaseController;
+
 class Home extends BaseController
 {
     public function index(): string
     {
-        return view('welcome_message');
+        // Pastikan file app/Views/peminjaman/index.php ada
+        return view('peminjaman/index');
     }
 }

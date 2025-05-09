@@ -1,36 +1,63 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class M_peminjaman extends CI_Model {
+namespace App\Models;
 
-    // CREATE: tambah data peminjaman baru
-    public function create($data) {
-        return $this->db->insert('pinjambuku', $data);
+use CodeIgniter\Model;
+
+class M_peminjaman extends Model
+{
+    protected $table = 'pinjambuku';          // Nama tabel
+    protected $primaryKey = 'id';             // Primary key
+
+    protected $allowedFields = [
+        'nama_peminjam',
+        'judul_buku',
+        'tanggal_pinjam',
+        'tanggal_kembali'
+    ];
+
+    // Jika ingin menggunakan timestamp otomatis (created_at, updated_at)
+    // protected $useTimestamps = true;
+
+    /**
+     * Ambil semua data atau data tertentu berdasarkan ID
+     */
+    public function read($id = null)
+    {
+        return $id === null
+            ? $this->findAll()
+            : $this->find($id);
     }
 
-    // READ: ambil semua data atau berdasarkan ID
-    public function read($id = FALSE) {
-        if ($id === FALSE) {
-            return $this->db->get('pinjambuku')->result_array();
-        } else {
-            return $this->db->get_where('pinjambuku', ['id' => $id])->row_array();
-        }
+    /**
+     * Tambah data baru
+     */
+    public function create(array $data)
+    {
+        return $this->insert($data);
     }
 
-    // UPDATE: ubah data berdasarkan ID
-    public function update($id, $data) {
-        $this->db->where('id', $id);
-        return $this->db->update('pinjambuku', $data);
+    /**
+     * Ubah data berdasarkan ID
+     */
+    public function updateData($id, array $data)
+    {
+        return $this->update($id, $data);
     }
 
-    // DELETE: hapus satu data berdasarkan ID
-    public function delete($id) {
-        return $this->db->delete('pinjambuku', ['id' => $id]);
+    /**
+     * Hapus data berdasarkan ID
+     */
+    public function deleteData($id)
+    {
+        return $this->delete($id);
     }
 
-    // DELETE ALL: kosongkan seluruh isi tabel
-    public function deleteAll() {
-        return $this->db->empty_table('pinjambuku');
+    /**
+     * Hapus semua data
+     */
+    public function deleteAllData()
+    {
+        return $this->builder()->emptyTable();
     }
 }
-?>

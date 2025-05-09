@@ -2,21 +2,24 @@
 
 namespace App\Controllers;
 
-use App\Models\PeminjamanModel;
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
+use App\Models\M_peminjaman;
 
-class PeminjamanController extends Controller
+class Peminjaman extends BaseController
 {
     protected $peminjamanModel;
 
     public function __construct()
     {
-        $this->peminjamanModel = new PeminjamanModel();
+        $this->peminjamanModel = new M_peminjaman();
+        helper(['form', 'url']);
     }
 
     public function index()
     {
-        $data['peminjaman'] = $this->peminjamanModel->findAll();
+        $data = [
+            'peminjaman' => $this->peminjamanModel->read()
+        ];
         return view('peminjaman/index', $data);
     }
 
@@ -27,39 +30,50 @@ class PeminjamanController extends Controller
 
     public function store()
     {
-        $this->peminjamanModel->save([
-            'nama_peminjam' => $this->request->getPost('nama_peminjam'),
-            'judul_buku'    => $this->request->getPost('judul_buku'),
-            'tanggal_pinjam'=> $this->request->getPost('tanggal_pinjam'),
-            'tanggal_kembali'=> $this->request->getPost('tanggal_kembali'),
-            'status'        => $this->request->getPost('status'),
+        $data = $this->request->getPost([
+            'nama_peminjam',
+            'judul_buku',
+            'tanggal_pinjam',
+            'tanggal_kembali',
+            'status'
         ]);
 
-        return redirect()->to('/peminjaman');
+        $this->peminjamanModel->create($data);
+        return redirect()->to('/peminjaman')->with('success', 'Data berhasil ditambahkan.');
     }
 
-    public function edit($id)
+    public function edit($id = null)
     {
-        $data['peminjaman'] = $this->peminjamanModel->find($id);
-        return view('peminjaman/edit', $data);
+        if (!$id || !$peminjaman = $this->peminjamanModel->read($id)) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Data tidak ditemukan: $id");
+        }
+
+        return view('peminjaman/edit', ['peminjaman' => $peminjaman]);
     }
 
-    public function update($id)
+    public function update($id = null)
     {
-        $this->peminjamanModel->update($id, [
-            'nama_peminjam' => $this->request->getPost('nama_peminjam'),
-            'judul_buku'    => $this->request->getPost('judul_buku'),
-            'tanggal_pinjam'=> $this->request->getPost('tanggal_pinjam'),
-            'tanggal_kembali'=> $this->request->getPost('tanggal_kembali'),
-            'status'        => $this->request->getPost('status'),
+        $data = $this->request->getPost([
+            'nama_peminjam',
+            'judul_buku',
+            'tanggal_pinjam',
+            'tanggal_kembali',
+            'status'
         ]);
 
-        return redirect()->to('/peminjaman');
+        $this->peminjamanModel->updateData($id, $data);
+        return redirect()->to('/peminjaman')->with('success', 'Data berhasil diupdate.');
     }
 
-    public function delete($id)
+    public function delete($id = null)
     {
-        $this->peminjamanModel->delete($id);
-        return redirect()->to('/peminjaman');
+        $this->peminjamanModel->deleteData($id);
+        return redirect()->to('/peminjaman')->with('success', 'Data berhasil dihapus.');
+    }
+
+    public function deleteAll()
+    {
+        $this->peminjamanModel->deleteAllData();
+        return redirect()->to('/peminjaman')->with('success', 'Semua data berhasil dihapus.');
     }
 }

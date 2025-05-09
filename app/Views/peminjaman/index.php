@@ -59,6 +59,14 @@
             <?php endif; ?>
         </tbody>
     </table>
+
+    <form action="<?= url_to('peminjaman.deleteAll') ?>" method="post" class="mt-3" onsubmit="return confirm('Yakin ingin menghapus semua data?');">
+        <?= csrf_field() ?>
+        <button type="submit" class="btn btn-danger btn-sm">
+            <i class="bi bi-trash"></i> Hapus Semua Data
+        </button>
+    </form>
+
 </div>
 
 <?= $this->include('layout/footer') ?>

@@ -56,10 +56,20 @@ class Peminjaman extends BaseController
 
     public function edit($id = null)
     {
-        if (!$id || !$peminjaman = $this->peminjamanModel->read($id)) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Data tidak ditemukan: $id");
+        if (!$id) {
+            return redirect()->to('/peminjaman')->with('error', 'ID tidak valid.');
         }
-
+    
+        // Konversi string ke integer
+        $id = (int)$id;
+    
+        // Cari data langsung dengan find()
+        $peminjaman = $this->peminjamanModel->find($id);
+    
+        if (!$peminjaman) {
+            return redirect()->to('/peminjaman')->with('error', 'Data tidak ditemukan.');
+        }
+    
         return view('peminjaman/edit', ['peminjaman' => $peminjaman]);
     }
 

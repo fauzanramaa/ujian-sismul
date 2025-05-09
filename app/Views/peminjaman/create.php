@@ -48,6 +48,7 @@
 
         <button type="submit" class="btn btn-success">Simpan</button>
         <a href="<?= base_url('peminjaman') ?>" class="btn btn-secondary">Batal</a>
+
     </form>
 </div>
 

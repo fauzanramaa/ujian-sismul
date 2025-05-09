@@ -18,7 +18,8 @@ class Peminjaman extends BaseController
     public function index()
     {
         $data = [
-            'peminjaman' => $this->peminjamanModel->read()
+            'peminjaman' => $this->peminjamanModel->read(),
+            'title' => 'Daftar Peminjaman Buku'
         ];
         return view('peminjaman/index', $data);
     }
@@ -30,6 +31,17 @@ class Peminjaman extends BaseController
 
     public function store()
     {
+        // Validasi sederhana
+        if (!$this->validate([
+            'nama_peminjam' => 'required',
+            'judul_buku' => 'required',
+            'tanggal_pinjam' => 'required|valid_date',
+            'tanggal_kembali' => 'required|valid_date',
+            'status' => 'required'
+        ])) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
         $data = $this->request->getPost([
             'nama_peminjam',
             'judul_buku',
@@ -53,6 +65,20 @@ class Peminjaman extends BaseController
 
     public function update($id = null)
     {
+        if (!$id) {
+            return redirect()->to('/peminjaman')->with('error', 'ID tidak valid.');
+        }
+
+        if (!$this->validate([
+            'nama_peminjam' => 'required',
+            'judul_buku' => 'required',
+            'tanggal_pinjam' => 'required|valid_date',
+            'tanggal_kembali' => 'required|valid_date',
+            'status' => 'required'
+        ])) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
         $data = $this->request->getPost([
             'nama_peminjam',
             'judul_buku',
@@ -67,6 +93,10 @@ class Peminjaman extends BaseController
 
     public function delete($id = null)
     {
+        if (!$id) {
+            return redirect()->to('/peminjaman')->with('error', 'ID tidak valid.');
+        }
+
         $this->peminjamanModel->deleteData($id);
         return redirect()->to('/peminjaman')->with('success', 'Data berhasil dihapus.');
     }
